@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Change to the directory.
+if [ "x$1" != "x" ]
+then
+	pushd "$1"
+fi
+
+# Figure out the path.
+INSTALL_DIR=$(shell pwd)
+
+# Check out the files.
+for i in node-author-intrusion node-author-intrusion-split node-author-intrusion-echo node-author-intrusion-service node-author-intrusion-cli atom-author-intrusion;do git clone git@github.com:author-intrusion/$i.git;done
+
+# Set up node-author-intrusion
+pushd node-author-intrusion
+npm install
+tsd reinstall
+grunt
+sudo npm link
+popd
+
+# Set up the plugins used by the services.
+for i in split echo
+do
+	pushd node-author-intrusion-$i
+	npm link node-author-intrusion
+	npm install
+	tsd reinstall
+	grunt
+	sudo npm link
+	popd
+done
+
+# Set up node-author-intrusion-service
+pushd node-author-intrusion-service
+npm link node-author-intrusion
+npm link node-author-intrusion-split
+npm link node-author-intrusion-echo
+npm install
+tsd reinstall
+grunt
+sudo npm link
+popd
+
+# Set up node-author-intrusion-cli
+pushd node-author-intrusion-cli
+npm link node-author-intrusion
+npm link node-author-intrusion-service
+npm install
+tsd reinstall
+grunt
+popd
+
+# Add to the command-line.
+pushd /usr/local/bin/
+ln -sf $INSTALL_DIR/node-author-intrusion-cli/bin/author-intrusion-cli .
+popd
+
+# Set up Atom
+pushd atom-author-intrusion
+npm link node-author-intrusion-service
+npm install
+tsd reinstall
+grunt
+apm link
+popd
