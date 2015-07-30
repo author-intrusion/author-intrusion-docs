@@ -27,42 +27,36 @@ In Atom, this will install the package which will automatically run when you edi
 What to put in the file is more flexible and will change over time. For starters, use something like this inside `project.aipy`.
 
     {
-      "name": "Project Name",
-      "analysis": [{
-        "name": "split",
-        "plugin": "node-author-intrusion-split"
-      }, {
-        "name": "echoes",
-        "plugin": "node-author-intrusion-echo",
-        "scope": "document",
-        "options": {
-    	  "range": 57,
-          "score": [0.0, 0.0, 1.0],
-    	  "warning": 2500,
-    	  "error": 5000,
-    	  "tokens": [{
-            "type": "regex",
-    		    "value": "\\W+",
-            "multiplier": 0.0
-          },{
-            "type": "regex",
-    		    "value": "(he|she|it|his|her|hers|its)",
-            "multiplier": 0.1
-          },{
-            "type": "regex",
-    		    "value": "(and|or|but|was|as|are|is)",
-            "multiplier": 0.5
-          },{
-            "type": "regex",
-    		    "value": "(of|to)",
-            "multiplier": 0.1
-          },{
-            "type": "regex",
-    		    "value": "(a|an|the)",
-            "multiplier": 0.01
-          }]
-        }
-      }]
+        "name": "Sand and Blood",
+        "analysis": [
+            {
+                "name": "split",
+                "plugin": "node-author-intrusion-split"
+            },
+            {
+                "name": "pos",
+                "plugin": "node-author-intrusion-pos-tagger"
+            },
+            { 
+                "name": "echoes",
+                "plugin": "node-author-intrusion-echo",
+                "options": {
+                    "condition": [
+                        {
+                            "warning": 2500,
+                            "error": 5000,
+                            "field": "normalized",
+                            "filter": {
+                                "field": "normalized",
+                                "search": "(he|she|it|his|her|hers|its)",
+                                "type": "regex"
+                            },
+                            "score": [0.0, 0.0, 1.0]
+                        }
+                    ],
+                    "range": 57,
+                    "scope": "document"
+                }
+            }
+        ]
     }
-    
-Once saved, then edit the Markdown file and just type "cheese cheese cheese cheese cheese cheese" and save it. If things work well, it will underline the cheese to indicate an error.

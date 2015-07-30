@@ -10,7 +10,7 @@ fi
 INSTALL_DIR=$(shell pwd)
 
 # Check out the files.
-for i in node-author-intrusion node-author-intrusion-split node-author-intrusion-echo node-author-intrusion-service node-author-intrusion-cli atom-author-intrusion;do git clone git@github.com:author-intrusion/$i.git;done
+for i in node-author-intrusion node-author-intrusion-split node-author-intrusion-echo node-author-intrusion-service node-author-intrusion-cli node-author-intrusion-pos-tagger atom-author-intrusion;do git clone git@github.com:author-intrusion/$i.git;done
 
 # Set up node-author-intrusion
 pushd node-author-intrusion
@@ -20,23 +20,42 @@ grunt
 sudo npm link
 popd
 
-# Set up the plugins used by the services.
-for i in split echo
-do
-	pushd node-author-intrusion-$i
-	npm link node-author-intrusion
-	npm install
-	tsd reinstall
-	grunt
-	sudo npm link
-	popd
-done
+# Set up node-author-intrusion-split
+pushd node-author-intrusion-split
+npm link node-author-intrusion
+npm install
+tsd reinstall
+grunt
+sudo npm link
+popd
+
+# Set up node-author-intrusion-pos-tagger
+pushd node-author-intrusion-pos-tagger
+npm link node-author-intrusion
+npm link node-author-intrusion-split
+npm install
+tsd reinstall
+grunt
+sudo npm link
+popd
+
+# Set up node-author-intrusion-echo
+pushd node-author-intrusion-echo
+npm link node-author-intrusion
+npm link node-author-intrusion-split
+npm link node-author-intrusion-pos-tagger
+npm install
+tsd reinstall
+grunt
+sudo npm link
+popd
 
 # Set up node-author-intrusion-service
 pushd node-author-intrusion-service
 npm link node-author-intrusion
 npm link node-author-intrusion-split
 npm link node-author-intrusion-echo
+npm link node-author-intrusion-pos-tagger
 npm install
 tsd reinstall
 grunt
